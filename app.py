@@ -89,8 +89,13 @@ app.add_middleware(
 )
 
 import os
-os.makedirs("static", exist_ok=True)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+try:
+    os.makedirs("static", exist_ok=True)
+except OSError:
+    pass # Vercel read-only filesystem
+
+if os.path.exists("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 # ═══════════════════════════════════════════════════════════════
