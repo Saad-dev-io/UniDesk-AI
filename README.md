@@ -1,5 +1,13 @@
-# 🎓 UniDesk AI — Intelligent University IT Helpdesk Agent
+---
+title: UniDesk AI
+emoji: 🎓
+colorFrom: red
+colorTo: blue
+sdk: docker
+pinned: false
+---
 
+# 🎓 UniDesk AI — Intelligent University IT Helpdesk Agent
 > An AI-powered triage agent that handles 80% of university IT support requests autonomously — classifying issues, resolving common problems with step-by-step guides, and routing complex tickets to the right specialist team.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white)
