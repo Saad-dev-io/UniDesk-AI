@@ -15,6 +15,7 @@ Architecture:
 
 import logging
 from datetime import datetime, timezone, timedelta
+from typing import Optional
 from pydantic import BaseModel, Field
 
 from google import genai
@@ -28,16 +29,16 @@ logger = logging.getLogger(__name__)
 class TriageResult(BaseModel):
     """Strict schema for the AI's triage response."""
     message: str = Field(description="The natural language response to the user.")
-    category: str | None = Field(None, description="Issue category (network, account, etc) or None if greeting.")
-    urgency: str | None = Field(None, description="Urgency level (P1, P2, P3, P4) or None.")
+    category: Optional[str] = Field(None, description="Issue category (network, account, etc) or None if greeting.")
+    urgency: Optional[str] = Field(None, description="Urgency level (P1, P2, P3, P4) or None.")
     confidence: float = Field(..., description="Confidence score from 0.0 to 1.0.")
     needs_more_info: bool = Field(..., description="True if the AI needs more info from the user.")
     is_self_resolvable: bool = Field(..., description="True if the issue has a known step-by-step solution.")
     should_create_ticket: bool = Field(..., description="True if a human agent is needed.")
     should_escalate: bool = Field(..., description="True if the issue is a P1, security risk, or urgent.")
-    escalation_reason: str | None = Field(None, description="Why this was escalated, if applicable.")
-    ticket_summary: str | None = Field(None, description="A 1-line summary for the ticket title.")
-    suggested_solution_topic: str | None = Field(None, description="The knowledge base topic key, if self_resolvable.")
+    escalation_reason: Optional[str] = Field(None, description="Why this was escalated, if applicable.")
+    ticket_summary: Optional[str] = Field(None, description="A 1-line summary for the ticket title.")
+    suggested_solution_topic: Optional[str] = Field(None, description="The knowledge base topic key, if self_resolvable.")
 
 class TriageEngine:
     """Gemini-powered IT issue triage engine."""
@@ -146,7 +147,7 @@ class TriageEngine:
                 "error": str(e),
             }
 
-    def get_session_info(self, session_id: str) -> dict | None:
+    def get_session_info(self, session_id: str) -> Optional[dict]:
         """Get metadata about a session."""
         if session_id in self._sessions:
             session = self._sessions[session_id]

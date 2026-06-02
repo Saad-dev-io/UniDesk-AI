@@ -1,3 +1,4 @@
+from typing import Optional
 """
 UniDesk AI — Ticket Manager
 =============================
@@ -69,8 +70,8 @@ class TicketManager:
         summary: str,
         session_id: str,
         escalated: bool = False,
-        escalation_reason: str | None = None,
-        user_id: str | None = None,
+        escalation_reason: Optional[str] = None,
+        user_id: Optional[str] = None,
         is_resolved: bool = False,
     ) -> dict:
         cat_info = CATEGORIES.get(category, CATEGORIES["other"])
@@ -108,7 +109,7 @@ class TicketManager:
             cursor.execute("SELECT * FROM tickets WHERE id = ?", (row_id,))
             return self._dict_from_row(cursor.fetchone())
 
-    def get_ticket(self, ticket_id: str) -> dict | None:
+    def get_ticket(self, ticket_id: str) -> Optional[dict]:
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM tickets WHERE ticket_number = ?", (ticket_id,))
@@ -117,10 +118,10 @@ class TicketManager:
 
     def get_tickets(
         self,
-        status: str | None = None,
-        category: str | None = None,
-        urgency: str | None = None,
-        user_id: str | None = None,
+        status: Optional[str] = None,
+        category: Optional[str] = None,
+        urgency: Optional[str] = None,
+        user_id: Optional[str] = None,
         limit: int = 50,
     ) -> list[dict]:
         query = "SELECT * FROM tickets WHERE 1=1"
@@ -146,7 +147,7 @@ class TicketManager:
             cursor.execute(query, params)
             return [self._dict_from_row(row) for row in cursor.fetchall()]
 
-    def update_status(self, ticket_id: str, new_status: str) -> dict | None:
+    def update_status(self, ticket_id: str, new_status: str) -> Optional[dict]:
         now = datetime.now(timezone.utc).isoformat()
         escalated_clause = "escalated = 1," if new_status == "escalated" else ""
         

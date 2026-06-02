@@ -50,8 +50,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger("unidesk")
 
+from typing import Optional
+
 # ─── Global instances ───────────────────────────────────────
-engine: TriageEngine | None = None
+engine: Optional[TriageEngine] = None
 tickets = TicketManager()
 
 
@@ -246,9 +248,9 @@ async def reset_session(request: Request):
 
 @app.get("/api/tickets")
 async def list_tickets(
-    status: str | None = None,
-    category: str | None = None,
-    urgency: str | None = None,
+    status: Optional[str] = None,
+    category: Optional[str] = None,
+    urgency: Optional[str] = None,
 ):
     """List all triaged tickets with optional filters.
 

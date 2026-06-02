@@ -1,3 +1,4 @@
+from typing import Optional
 """
 UniDesk AI — Knowledge Base
 =============================
@@ -185,7 +186,7 @@ SOLUTIONS = {
 }
 
 
-def get_solution(topic_key: str) -> dict | None:
+def get_solution(topic_key: str) -> Optional[dict]:
     """Retrieve a solution guide by its topic key.
 
     Args:
@@ -197,7 +198,7 @@ def get_solution(topic_key: str) -> dict | None:
     return SOLUTIONS.get(topic_key)
 
 
-def format_solution(topic_key: str) -> str | None:
+def format_solution(topic_key: str) -> Optional[str]:
     """Format a solution as a readable markdown string for chat display.
 
     Args:
