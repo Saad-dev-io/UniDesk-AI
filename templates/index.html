@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>UniDesk AI | Chat Canvas</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- XSS Sanitizer -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#410000",
+                        "primary-container": "#e86a58",
+                        "surface": "#faf9f7",
+                        "on-surface-variant": "#57423e",
+                        "secondary": "#466555",
+                        "primary-fixed": "#ffdad4",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#c8ebd7",
+                        "on-error": "#ffffff",
+                        "background": "#faf9f7",
+                        "secondary-fixed-dim": "#accebb",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#dadad8",
+                        "on-secondary-fixed": "#012115",
+                        "secondary-fixed": "#c8ebd7",
+                        "surface-variant": "#e3e2e0",
+                        "on-background": "#1a1c1b",
+                        "inverse-on-surface": "#f1f1ef",
+                        "outline": "#8b716d",
+                        "surface-container-low": "#f4f3f1",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#ffddb9",
+                        "on-tertiary-fixed-variant": "#663e00",
+                        "on-surface": "#1a1c1b",
+                        "inverse-surface": "#2f3130",
+                        "tertiary": "#835100",
+                        "on-tertiary-fixed": "#2b1700",
+                        "on-primary-container": "#5c0100",
+                        "tertiary-container": "#a0691b",
+                        "surface-container-high": "#e9e8e6",
+                        "on-tertiary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#862217",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#efeeec",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#dec0bb",
+                        "on-secondary-container": "#4c6b5b",
+                        "inverse-primary": "#ffb4a8",
+                        "on-secondary-fixed-variant": "#2e4d3e",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#faf9f7",
+                        "tertiary-fixed-dim": "#feb965",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#a6392c",
+                        "surface-container-highest": "#e3e2e0",
+                        "surface-tint": "#a6392c",
+                        "primary-fixed-dim": "#ffb4a8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "dock-offset": "32px",
+                        "container-padding": "40px",
+                        "unit": "8px",
+                        "gutter": "24px",
+                        "max-content-width": "1200px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Lora"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-lg": ["Lora"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-md": ["Lora"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Lora"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.03em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            background-color: #F9F8F6;
+            scroll-behavior: smooth;
+        }
+
+        .message-entry {
+            animation: slideUpFade 0.4s ease-out forwards;
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .thinking-wave span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #a6392c;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .thinking-wave span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .thinking-wave span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(0.8);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #dec0bb;
+            border-radius: 10px;
+        }
+
+        /* Auto-resizing Textarea Styling */
+        #chat-input {
+            resize: none;
+            overflow-y: auto;
+            min-height: 56px;
+            max-height: 150px;
+            line-height: 1.5;
+        }
+
+        /* Sidebar Tooltips */
+        .nav-item {
+            position: relative;
+        }
+
+        .tooltip {
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #2f3130;
+            color: #ffffff;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            pointer-events: none;
+            z-index: 60;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            margin-top: -4px;
+            border-width: 4px;
+            border-style: solid;
+            border-color: transparent #2f3130 transparent transparent;
+        }
+
+        .nav-item:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Markdown Reset and Styling for Chat */
+        .markdown-content p {
+            margin-bottom: 0.5rem;
+        }
+
+        .markdown-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .markdown-content strong {
+            font-weight: 700;
+            color: inherit;
+        }
+
+        .markdown-content code {
+            background-color: rgba(166, 57, 44, 0.1);
+            border-radius: 4px;
+            padding: 2px 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        /* Fix #12: Horizontal rules */
+        .markdown-content hr {
+            border: none;
+            border-top: 1px solid #dec0bb;
+            margin: 1rem 0;
+        }
+
+        /* Fix #13: List styling */
+        .markdown-content ul,
+        .markdown-content ol {
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .markdown-content li {
+            margin-bottom: 0.25rem;
+        }
+
+        .markdown-content ul li {
+            list-style-type: disc;
+        }
+
+        .markdown-content ol li {
+            list-style-type: decimal;
+        }
+
+        /* Fix #11: Mobile responsiveness */
+        @media (max-width: 768px) {
+            nav.fixed {
+                display: none;
+            }
+
+            main {
+                margin-left: 0 !important;
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+
+            .max-w-max-content-width {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="font-body-md text-on-surface">
+    <!-- Top AppBar -->
+    <header class="fixed top-0 w-full h-20 bg-surface/90 backdrop-blur-md border-b border-outline-variant/10 z-50">
+        <div
+            class="max-w-max-content-width mx-auto w-full h-full flex justify-between items-center px-container-padding">
+            <div class="flex items-center gap-3">
+                <span class="font-headline-lg text-headline-lg text-primary">UniDesk AI</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <button id="help-btn"
+                    class="text-on-surface-variant hover:opacity-80 transition-opacity cursor-pointer flex items-center">
+                    <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+                </button>
+                <button id="settings-btn"
+                    class="text-on-surface-variant hover:opacity-80 transition-opacity cursor-pointer flex items-center">
+                    <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                </button>
+                <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/10 shadow-sm">
+                    <img alt="Support Agent" class="w-full h-full object-cover"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDc5KUE0fQxm5x6xtXXVrpZZif3XCO7G6tDxzkGouT3xsyUViC6SfnjI2NKTY10zFNlEhJuFfBPofFB-4GiNwEO8VEZ50uKpGzNt6UwsR27Uq9tNSSvLTBLWrhVbW6QHqsFg1lnxmG_ZJPP9xSXv1AtAC_VZiRw6_dhmOqoQrmlhcT5zLyJuuLPM5Wj86lB5Sh_CcLt8-NUKzp8SO1wLLD7m5mcsBt_gDS0GtGQBtQ5oFGDXbog9luc6qRs7HALCnFMc1LvaskuLXs" />
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- SideNavBar (JSON Component - Pill Floating) -->
+    <nav
+        class="fixed left-dock-offset top-1/2 -translate-y-1/2 w-20 rounded-full py-8 shadow-[0_12px_32px_rgba(0,0,0,0.03)] bg-surface flex flex-col items-center gap-6 z-50">
+        <div class="nav-item mb-2">
+            <div id="new-chat-btn"
+                class="text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors rounded-full cursor-pointer border border-outline-variant/30"
+                title="New Chat">
+                <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+            </div>
+            <span class="tooltip">New Chat</span>
+        </div>
+        <div class="w-10 h-px bg-outline-variant/20 mb-2"></div>
+        <div class="nav-item">
+            <div id="chat-tab-btn"
+                class="text-on-primary-container bg-primary-container rounded-full p-4 scale-95 active:scale-90 transition-transform cursor-pointer shadow-sm"
+                title="Chat">
+                <span class="material-symbols-outlined" data-icon="forum">forum</span>
+            </div>
+            <span class="tooltip">Chat</span>
+        </div>
+        <div class="nav-item">
+            <div id="tickets-btn"
+                class="text-on-surface-variant p-4 hover:bg-surface-container-high transition-colors rounded-full cursor-pointer"
+                title="Tickets">
+                <span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+            </div>
+            <span class="tooltip">Tickets</span>
+        </div>
+        <div class="nav-item">
+            <div id="dashboard-btn"
+                class="text-on-surface-variant p-4 hover:bg-surface-container-high transition-colors rounded-full cursor-pointer"
+                title="Dashboard">
+                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            </div>
+            <span class="tooltip">Dashboard</span>
+        </div>
+    </nav>
+    <!-- Main Canvas Area -->
+    <main
+        class="ml-32 mr-container-padding pt-24 pb-48 min-h-screen flex flex-col max-w-max-content-width mx-auto relative">
+        <!-- Welcome / Hero Header -->
+        <div class="flex flex-col items-center justify-center flex-grow opacity-100 transition-opacity duration-500"
+            id="empty-state">
+            <h1 class="font-display-lg text-display-lg text-on-surface mb-4 text-center">How can I assist your team
+                today?</h1>
+            <p class="text-on-surface-variant font-body-lg text-body-lg text-center max-w-2xl">UniDesk AI is your
+                empathetic partner in premium customer support. Ask me about ticket summaries, agent performance, or
+                drafting responses.</p>
+        </div>
+        <!-- Chat Container -->
+        <div class="flex-grow flex flex-col gap-8 custom-scrollbar overflow-y-auto px-4 w-full max-w-[800px] mx-auto"
+            id="chat-container">
+            <!-- Messages injected here -->
+        </div>
+        <!-- Thinking Indicator (Hidden by default) -->
+        <div class="hidden message-entry mb-8 px-4 w-full max-w-[800px] mx-auto" id="thinking-indicator">
+            <div class="flex items-center gap-3">
+                <div
+                    class="thinking-wave flex items-center justify-center bg-white p-4 rounded-[20px] shadow-[0_12px_32px_rgba(0,0,0,0.03)] border border-primary/5">
+                    <span></span><span></span><span></span>
+                </div>
+                <span class="text-label-sm text-on-surface-variant uppercase tracking-widest">Analysing Ticket
+                    Context</span>
+            </div>
+        </div>
+        <!-- Dashboard View (Hidden by default) -->
+        <div class="hidden flex-grow flex flex-col gap-6 w-full max-w-[1000px] mx-auto px-4" id="dashboard-view">
+            <h2 class="font-display-lg text-display-lg text-primary mb-4">Dashboard</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="dashboard-stats">
+                <!-- Injected via JS -->
+            </div>
+            <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/20">
+                <h3 class="font-headline-md text-headline-md mb-4">Category Breakdown</h3>
+                <div id="category-breakdown" class="flex flex-col gap-3"></div>
+            </div>
+        </div>
+
+        <!-- Tickets View (Hidden by default) -->
+        <div class="hidden flex-grow flex flex-col gap-6 w-full max-w-[1000px] mx-auto px-4" id="tickets-view">
+            <h2 class="font-display-lg text-display-lg text-primary mb-4">Triaged Tickets</h2>
+            <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-surface-container-low text-label-md text-on-surface-variant">
+                        <tr>
+                            <th class="p-4 border-b border-outline-variant/20 font-semibold">ID</th>
+                            <th class="p-4 border-b border-outline-variant/20 font-semibold">Summary</th>
+                            <th class="p-4 border-b border-outline-variant/20 font-semibold">Category</th>
+                            <th class="p-4 border-b border-outline-variant/20 font-semibold">Urgency</th>
+                            <th class="p-4 border-b border-outline-variant/20 font-semibold">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tickets-tbody" class="text-body-sm text-on-surface divide-y divide-outline-variant/10">
+                        <!-- Injected via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Floating Input Dock -->
+        <div
+            class="fixed bottom-0 left-0 w-full pt-20 pb-10 bg-gradient-to-t from-[#F9F8F6] via-[#F9F8F6]/95 to-transparent z-50 pointer-events-none">
+            <div class="w-full max-w-[800px] mx-auto px-container-padding pointer-events-auto relative">
+                <div
+                    class="bg-white rounded-[28px] shadow-[0_12px_32px_rgba(0,0,0,0.03)] border border-primary/10 p-2 flex items-end group transition-all duration-300 hover:shadow-[0_16px_36px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
+                    <textarea
+                        class="flex-grow bg-transparent border-none focus:ring-0 px-6 py-4 font-body-md text-on-surface placeholder:text-on-surface-variant/50"
+                        id="chat-input" placeholder="Ask UniDesk AI anything..." rows="1"></textarea>
+                    <button
+                        class="bg-primary-container text-white w-12 h-12 mb-1 rounded-full flex items-center justify-center hover:bg-primary transition-all active:scale-90 shadow-md flex-shrink-0"
+                        id="send-btn">
+                        <span class="material-symbols-outlined" data-icon="send">send</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const emptyState = document.getElementById('empty-state');
+        const thinkingIndicator = document.getElementById('thinking-indicator');
+
+        // Session ID Generation
+        let sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const userId = "demo_student_01";
+        console.log("Session ID generated:", sessionId);
+
+        // Robust Markdown Parsing using marked.js
+        marked.use({ breaks: true, gfm: true });
+        function parseMessage(text) {
+            return DOMPurify.sanitize(marked.parse(text));
+        }
+
+        // Auto-resizing Textarea Logic
+        chatInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            const newHeight = Math.min(this.scrollHeight, 150);
+            this.style.height = newHeight + 'px';
+        });
+
+        function createMessageElement(content, isUser, meta = null) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `message-entry flex ${isUser ? 'justify-end' : 'justify-start'} w-full mb-6`;
+
+            if (isUser) {
+                wrapper.innerHTML = `
+                    <div class="max-w-[75%] bg-primary-container text-white px-8 py-5 rounded-[20px] rounded-tr-none shadow-sm font-body-md markdown-content">
+                        ${parseMessage(content)}
+                    </div>
+                `;
+            } else {
+                let tagsHtml = '';
+                if (meta && meta.category && meta.urgency) {
+                    const urgencyColors = {
+                        'P1': 'bg-error text-on-error',
+                        'P2': 'bg-tertiary-container text-on-tertiary-container',
+                        'P3': 'bg-secondary-container text-on-secondary-container',
+                        'P4': 'bg-surface-container-high text-on-surface-variant'
+                    };
+                    tagsHtml = `
+                        <div class="mt-4 flex items-center gap-2 flex-wrap">
+                            <span class="bg-secondary-container text-secondary px-3 py-1 rounded-full text-label-sm">${meta.category}</span>
+                            <span class="${urgencyColors[meta.urgency] || 'bg-surface-container text-on-surface-variant'} px-3 py-1 rounded-full text-label-sm">${meta.urgency}</span>
+                            ${meta.ticket ? `<button onclick="showTickets()" class="ml-auto bg-surface-container-high hover:bg-surface-variant text-on-surface text-label-sm px-4 py-1.5 rounded-full transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[16px]">confirmation_number</span> View Ticket ${meta.ticket.id}</button>` : ''}
+                        </div>
+                    `;
+                }
+
+                wrapper.innerHTML = `
+                    <div class="max-w-[85%]">
+                        <div class="bg-white px-8 py-6 rounded-[20px] rounded-tl-none shadow-[0_12px_32px_rgba(0,0,0,0.03)] border border-primary/5">
+                            <div class="font-body-md text-body-md text-on-surface leading-relaxed mb-1 markdown-content">
+                                ${parseMessage(content)}
+                            </div>
+                            ${tagsHtml}
+                        </div>
+                    </div>
+                `;
+            }
+            return wrapper;
+        }
+
+        let isLoading = false;
+
+        async function handleSendMessage() {
+            const message = chatInput.value.trim();
+            if (!message || isLoading) return;
+
+            isLoading = true;
+            sendBtn.disabled = true;
+            sendBtn.style.opacity = '0.5';
+
+            // Hide empty state
+            emptyState.style.opacity = '0';
+            setTimeout(() => emptyState.classList.add('hidden'), 500);
+
+            // Add User Message
+            chatContainer.appendChild(createMessageElement(message, true));
+            chatInput.value = '';
+            chatInput.style.height = 'auto'; // Reset height
+
+            // Scroll to bottom
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+            // Show thinking
+            thinkingIndicator.classList.remove('hidden');
+
+            try {
+                // Real POST to /api/chat
+                const payload = {
+                    session_id: sessionId,
+                    user_id: userId,
+                    message: message
+                };
+                console.log("POST to /api/chat:", payload);
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                thinkingIndicator.classList.add('hidden');
+
+                if (data.success) {
+                    chatContainer.appendChild(createMessageElement(data.message, false, {
+                        category: data.category,
+                        urgency: data.urgency,
+                        ticket: data.ticket
+                    }));
+                } else {
+                    chatContainer.appendChild(createMessageElement("Server error: " + (data.error || "Unknown error"), false));
+                }
+
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            } catch (err) {
+                thinkingIndicator.classList.add('hidden');
+                chatContainer.appendChild(createMessageElement(
+                    "⚠️ Connection error. Please check your internet and try again.", false
+                ));
+                console.error("Chat error:", err);
+            } finally {
+                isLoading = false;
+                sendBtn.disabled = false;
+                sendBtn.style.opacity = '1';
+            }
+        }
+
+        sendBtn.addEventListener('click', handleSendMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+            }
+        });
+
+        // Add some atmospheric micro-interaction for the input bar shadow
+        chatInput.addEventListener('focus', () => {
+            chatInput.parentElement.classList.add('ring-2', 'ring-primary-container/20');
+        });
+        chatInput.addEventListener('blur', () => {
+            chatInput.parentElement.classList.remove('ring-2', 'ring-primary-container/20');
+        });
+
+        const dashboardView = document.getElementById('dashboard-view');
+        const ticketsView = document.getElementById('tickets-view');
+        const inputDock = document.getElementById('chat-input').closest('.fixed.bottom-0');
+
+        function setActiveNav(activeId) {
+            const btns = ['chat-tab-btn', 'tickets-btn', 'dashboard-btn'];
+            btns.forEach(id => {
+                const btn = document.getElementById(id);
+                if (id === activeId) {
+                    btn.className = "text-on-primary-container bg-primary-container rounded-full p-4 scale-95 active:scale-90 transition-all cursor-pointer shadow-sm";
+                } else {
+                    btn.className = "text-on-surface-variant bg-transparent p-4 hover:bg-surface-container-high transition-colors rounded-full cursor-pointer";
+                }
+            });
+        }
+
+        function showChat() {
+            setActiveNav('chat-tab-btn');
+            chatContainer.classList.remove('hidden');
+            if (chatContainer.children.length === 0) emptyState.classList.remove('hidden');
+            inputDock.classList.remove('hidden');
+            dashboardView.classList.add('hidden');
+            ticketsView.classList.add('hidden');
+        }
+
+        async function showDashboard() {
+            setActiveNav('dashboard-btn');
+            chatContainer.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            inputDock.classList.add('hidden');
+            ticketsView.classList.add('hidden');
+            dashboardView.classList.remove('hidden');
+
+            try {
+                const res = await fetch('/api/stats');
+                const stats = await res.json();
+                
+                document.getElementById('dashboard-stats').innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/20">
+                        <div class="text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Total Tickets</div>
+                        <div class="text-display-lg font-display-lg text-primary">${stats.total}</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/20">
+                        <div class="text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Escalation Rate</div>
+                        <div class="text-display-lg font-display-lg text-error">${stats.escalation_rate}%</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/20">
+                        <div class="text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Auto-Resolved</div>
+                        <div class="text-display-lg font-display-lg text-secondary">${stats.auto_resolved}</div>
+                    </div>
+                `;
+
+                const breakdown = document.getElementById('category-breakdown');
+                breakdown.innerHTML = '';
+                for (const [key, data] of Object.entries(stats.categories)) {
+                    breakdown.innerHTML += `
+                        <div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">${data.icon}</span>
+                                <span class="font-label-md">${data.name}</span>
+                            </div>
+                            <span class="font-headline-sm">${data.count}</span>
+                        </div>
+                    `;
+                }
+            } catch (err) { console.error("Stats error", err); }
+        }
+
+        async function showTickets() {
+            setActiveNav('tickets-btn');
+            chatContainer.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            inputDock.classList.add('hidden');
+            dashboardView.classList.add('hidden');
+            ticketsView.classList.remove('hidden');
+
+            try {
+                const res = await fetch('/api/tickets');
+                const tickets = await res.json();
+                const tbody = document.getElementById('tickets-tbody');
+                tbody.innerHTML = '';
+                
+                tickets.forEach(t => {
+                    const statusColors = {
+                        'open': 'bg-primary-container text-on-primary-container',
+                        'escalated': 'bg-error text-on-error',
+                        'resolved': 'bg-secondary-container text-on-secondary-container'
+                    };
+                    
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-surface-container-low transition-colors">
+                            <td class="p-4 font-label-md text-primary">${t.id}</td>
+                            <td class="p-4 font-body-sm">${t.summary}</td>
+                            <td class="p-4">${t.category_icon} ${t.category_name}</td>
+                            <td class="p-4">
+                                <span class="inline-block w-3 h-3 rounded-full mr-2" style="background-color: ${t.urgency_color}"></span>
+                                ${t.urgency}
+                            </td>
+                            <td class="p-4">
+                                <span class="${statusColors[t.status] || 'bg-surface-variant text-on-surface-variant'} px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                    ${t.status}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) { console.error("Tickets error", err); }
+        }
+
+        // Navigation Button Listeners
+        document.getElementById('chat-tab-btn').addEventListener('click', showChat);
+        
+        document.getElementById('new-chat-btn').addEventListener('click', async () => {
+            showChat();
+            chatContainer.innerHTML = '';
+            emptyState.style.opacity = '1';
+            emptyState.classList.remove('hidden');
+
+            // Generate a new session ID for the backend
+            sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            console.log("Started new chat session:", sessionId);
+
+            // Optionally, we could call POST /api/reset here too
+            try {
+                await fetch('/api/reset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId })
+                });
+            } catch (err) { console.error("Reset error:", err); }
+        });
+
+        document.getElementById('tickets-btn').addEventListener('click', showTickets);
+        document.getElementById('dashboard-btn').addEventListener('click', showDashboard);
+        document.getElementById('help-btn').addEventListener('click', showChat);
+
+    </script>
+</body>
+
+</html>

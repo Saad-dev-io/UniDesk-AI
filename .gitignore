@@ -1,0 +1,35 @@
+# ─── Python ──────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ─── Virtual Environment ────────────────
+venv/
+.venv/
+env/
+
+# ─── Secrets ─────────────────────────────
+.env
+.env.local
+.env.production
+
+# ─── IDE ─────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── OS ──────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Data ────────────────────────────────
+data/
+*.db
+*.sqlite3
