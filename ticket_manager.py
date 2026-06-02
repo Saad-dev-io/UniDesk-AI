@@ -10,7 +10,10 @@ import os
 from datetime import datetime, timezone
 from config import CATEGORIES, URGENCY_LEVELS
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "data", "triage.db")
+if os.environ.get("VERCEL"):
+    DB_PATH = "/tmp/triage.db"
+else:
+    DB_PATH = os.path.join(os.path.dirname(__file__), "data", "triage.db")
 
 class TicketManager:
     """Manages IT support tickets in SQLite."""
