@@ -8,7 +8,7 @@ All business logic constants, routing rules, and the AI system prompt live here.
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 # ─── API Configuration (Google AI Studio — free) ────────────
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or ""
