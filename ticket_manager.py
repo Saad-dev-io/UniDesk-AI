@@ -11,17 +11,36 @@ import os
 from datetime import datetime, timezone
 from config import CATEGORIES, URGENCY_LEVELS
 
+# Determine database path with robust fallback for read-only environments
+DEFAULT_DB_PATH = os.path.join(os.path.dirname(__file__), "data", "triage.db")
+TMP_DB_PATH = "/tmp/triage.db"
+
 if os.environ.get("VERCEL"):
-    DB_PATH = "/tmp/triage.db"
+    DB_PATH = TMP_DB_PATH
 else:
-    DB_PATH = os.path.join(os.path.dirname(__file__), "data", "triage.db")
+    try:
+        # Check if we can write to the default data directory
+        db_dir = os.path.dirname(DEFAULT_DB_PATH)
+        os.makedirs(db_dir, exist_ok=True)
+        # Verify write permissions by writing a tiny temp file
+        test_file = os.path.join(db_dir, ".write_test")
+        with open(test_file, "w") as f:
+            f.write("")
+        os.remove(test_file)
+        DB_PATH = DEFAULT_DB_PATH
+    except Exception:
+        # Fallback to /tmp if we are in any write-restricted container/hosting
+        DB_PATH = TMP_DB_PATH
 
 class TicketManager:
     """Manages IT support tickets in SQLite."""
 
     def __init__(self):
-        # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+        try:
+            # Create directory if it doesn't exist (if it's /tmp, it already exists usually)
+            os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+        except OSError:
+            pass
         self._init_db()
 
     def _get_conn(self):

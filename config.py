@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ─── API Configuration (Google AI Studio — free) ────────────
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or ""
 MODEL = "gemini-2.5-flash"
 
 # ─── Application ────────────────────────────────────────────

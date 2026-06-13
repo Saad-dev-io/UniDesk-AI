@@ -89,13 +89,14 @@ app.add_middleware(
 )
 
 import os
+static_dir = os.path.join(os.path.dirname(__file__), "static")
 try:
-    os.makedirs("static", exist_ok=True)
+    os.makedirs(static_dir, exist_ok=True)
 except OSError:
-    pass # Vercel read-only filesystem
+    pass # Read-only filesystem
 
-if os.path.exists("static"):
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -106,7 +107,8 @@ if os.path.exists("static"):
 @app.get("/", response_class=FileResponse)
 async def index():
     """Serve the main chat interface."""
-    return FileResponse("templates/index.html")
+    index_path = os.path.join(os.path.dirname(__file__), "templates", "index.html")
+    return FileResponse(index_path)
 
 
 # ═══════════════════════════════════════════════════════════════
