@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-
 <html class="light" lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>UniDesk AI | Chat Canvas</title>
+    <title>UniDesk AI | Campus Support Canvas</title>
     <!-- Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap"
@@ -121,6 +120,12 @@
         body {
             background-color: #F9F8F6;
             scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        html.dark body {
+            background-color: #121212;
+            color: #e3e2e0;
         }
 
         .message-entry {
@@ -301,45 +306,47 @@
     </style>
 </head>
 
-<body class="font-body-md text-on-surface">
+<body class="font-body-md text-on-surface transition-colors duration-300 dark:text-zinc-200">
     <!-- Top AppBar -->
-    <header class="fixed top-0 w-full h-20 bg-surface/90 backdrop-blur-md border-b border-outline-variant/10 z-50">
+    <header class="fixed top-0 w-full h-20 bg-surface/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-outline-variant/10 dark:border-zinc-800/50 z-50 transition-all duration-300">
         <div
             class="max-w-max-content-width mx-auto w-full h-full flex justify-between items-center px-container-padding">
             <div class="flex items-center gap-3">
-                <span class="font-headline-lg text-headline-lg text-primary">UniDesk AI</span>
+                <span class="font-headline-lg text-headline-lg text-primary dark:text-primary-container">UniDesk AI</span>
             </div>
             <div class="flex items-center gap-6">
                 <button id="help-btn"
-                    class="text-on-surface-variant hover:opacity-80 transition-opacity cursor-pointer flex items-center">
+                    class="text-on-surface-variant dark:text-zinc-400 hover:opacity-80 transition-opacity cursor-pointer flex items-center">
                     <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
                 </button>
-                <button id="settings-btn"
-                    class="text-on-surface-variant hover:opacity-80 transition-opacity cursor-pointer flex items-center">
-                    <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                <button id="theme-toggle"
+                    class="text-on-surface-variant dark:text-zinc-400 hover:opacity-80 transition-opacity cursor-pointer flex items-center"
+                    title="Toggle Theme">
+                    <span class="material-symbols-outlined" id="theme-toggle-icon" data-icon="dark_mode">dark_mode</span>
                 </button>
-                <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/10 shadow-sm">
+                <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/10 dark:border-zinc-800 shadow-sm">
                     <img alt="Support Agent" class="w-full h-full object-cover"
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDc5KUE0fQxm5x6xtXXVrpZZif3XCO7G6tDxzkGouT3xsyUViC6SfnjI2NKTY10zFNlEhJuFfBPofFB-4GiNwEO8VEZ50uKpGzNt6UwsR27Uq9tNSSvLTBLWrhVbW6QHqsFg1lnxmG_ZJPP9xSXv1AtAC_VZiRw6_dhmOqoQrmlhcT5zLyJuuLPM5Wj86lB5Sh_CcLt8-NUKzp8SO1wLLD7m5mcsBt_gDS0GtGQBtQ5oFGDXbog9luc6qRs7HALCnFMc1LvaskuLXs" />
                 </div>
             </div>
         </div>
     </header>
+    
     <!-- SideNavBar (JSON Component - Pill Floating) -->
     <nav
-        class="fixed left-dock-offset top-1/2 -translate-y-1/2 w-20 rounded-full py-8 shadow-[0_12px_32px_rgba(0,0,0,0.03)] bg-surface flex flex-col items-center gap-6 z-50">
+        class="fixed left-dock-offset top-1/2 -translate-y-1/2 w-20 rounded-full py-8 shadow-[0_12px_32px_rgba(0,0,0,0.03)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.2)] bg-surface dark:bg-zinc-900 border dark:border-zinc-800/60 flex flex-col items-center gap-6 z-50 transition-all duration-300">
         <div class="nav-item mb-2">
             <div id="new-chat-btn"
-                class="text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors rounded-full cursor-pointer border border-outline-variant/30"
+                class="text-on-surface-variant dark:text-zinc-400 p-2 hover:bg-surface-container-high dark:hover:bg-zinc-800 transition-colors rounded-full cursor-pointer border border-outline-variant/30 dark:border-zinc-800"
                 title="New Chat">
                 <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
             </div>
             <span class="tooltip">New Chat</span>
         </div>
-        <div class="w-10 h-px bg-outline-variant/20 mb-2"></div>
+        <div class="w-10 h-px bg-outline-variant/20 dark:bg-zinc-800 mb-2"></div>
         <div class="nav-item">
             <div id="chat-tab-btn"
-                class="text-on-primary-container bg-primary-container rounded-full p-4 scale-95 active:scale-90 transition-transform cursor-pointer shadow-sm"
+                class="text-on-primary-container dark:text-zinc-100 bg-primary-container dark:bg-primary-container rounded-full p-4 scale-95 active:scale-90 transition-all cursor-pointer shadow-sm"
                 title="Chat">
                 <span class="material-symbols-outlined" data-icon="forum">forum</span>
             </div>
@@ -347,7 +354,7 @@
         </div>
         <div class="nav-item">
             <div id="tickets-btn"
-                class="text-on-surface-variant p-4 hover:bg-surface-container-high transition-colors rounded-full cursor-pointer"
+                class="text-on-surface-variant dark:text-zinc-400 p-4 hover:bg-surface-container-high dark:hover:bg-zinc-800 transition-colors rounded-full cursor-pointer"
                 title="Tickets">
                 <span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
             </div>
@@ -355,81 +362,123 @@
         </div>
         <div class="nav-item">
             <div id="dashboard-btn"
-                class="text-on-surface-variant p-4 hover:bg-surface-container-high transition-colors rounded-full cursor-pointer"
+                class="text-on-surface-variant dark:text-zinc-400 p-4 hover:bg-surface-container-high dark:hover:bg-zinc-800 transition-colors rounded-full cursor-pointer"
                 title="Dashboard">
                 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
             </div>
             <span class="tooltip">Dashboard</span>
         </div>
     </nav>
+    
     <!-- Main Canvas Area -->
     <main
-        class="ml-32 mr-container-padding pt-24 pb-48 min-h-screen flex flex-col max-w-max-content-width mx-auto relative">
-        <!-- Welcome / Hero Header -->
-        <div class="flex flex-col items-center justify-center flex-grow opacity-100 transition-opacity duration-500"
+        class="ml-32 mr-container-padding pt-24 pb-48 min-h-screen flex flex-col max-w-max-content-width mx-auto relative transition-all duration-300">
+        
+        <!-- Welcome / Hero Header (Empty State) -->
+        <div class="flex flex-col items-center justify-center flex-grow opacity-100 transition-opacity duration-500 py-10"
             id="empty-state">
-            <h1 class="font-display-lg text-display-lg text-on-surface mb-4 text-center">How can I assist your team
-                today?</h1>
-            <p class="text-on-surface-variant font-body-lg text-body-lg text-center max-w-2xl">UniDesk AI is your
-                empathetic partner in premium customer support. Ask me about ticket summaries, agent performance, or
-                drafting responses.</p>
+            <div class="w-16 h-16 rounded-3xl bg-primary-container/10 flex items-center justify-center mb-6 animate-pulse">
+                <span class="material-symbols-outlined text-primary text-[40px]">school</span>
+            </div>
+            <h1 class="font-display-lg text-display-lg text-on-surface dark:text-zinc-100 mb-3 text-center">Campus IT Support Agent</h1>
+            <p class="text-on-surface-variant dark:text-zinc-400 font-body-lg text-body-lg text-center max-w-xl mb-8">
+                Welcome to **UniDesk AI**. Ask me anything about university networks, email configuration, account passwords, LMS, and campus IT resources.
+            </p>
+            <!-- Quick Start Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[650px] px-4">
+                <button onclick="sendQuickPrompt('My WiFi is not connecting in the library')" 
+                    class="p-5 bg-white dark:bg-zinc-900 border border-outline-variant/20 dark:border-zinc-800/80 rounded-2xl text-left hover:border-primary/50 dark:hover:border-primary-container/50 hover:shadow-md dark:shadow-zinc-950 transition-all cursor-pointer group flex items-center gap-4">
+                    <span class="text-3xl p-3 bg-blue-50 dark:bg-blue-950/30 rounded-xl">📶</span>
+                    <div>
+                        <div class="font-bold text-on-surface dark:text-zinc-200 group-hover:text-primary dark:group-hover:text-primary-container transition-colors">Troubleshoot WiFi</div>
+                        <div class="text-xs text-on-surface-variant dark:text-zinc-400 mt-1">Get help connecting to UniNet-Student</div>
+                    </div>
+                </button>
+                <button onclick="sendQuickPrompt('I forgot my portal password, how do I reset it?')" 
+                    class="p-5 bg-white dark:bg-zinc-900 border border-outline-variant/20 dark:border-zinc-800/80 rounded-2xl text-left hover:border-primary/50 dark:hover:border-primary-container/50 hover:shadow-md dark:shadow-zinc-950 transition-all cursor-pointer group flex items-center gap-4">
+                    <span class="text-3xl p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl">🔑</span>
+                    <div>
+                        <div class="font-bold text-on-surface dark:text-zinc-200 group-hover:text-primary dark:group-hover:text-primary-container transition-colors">Reset Password</div>
+                        <div class="text-xs text-on-surface-variant dark:text-zinc-400 mt-1">Reset university portal & email password</div>
+                    </div>
+                </button>
+                <button onclick="sendQuickPrompt('How do I install and configure the campus VPN?')" 
+                    class="p-5 bg-white dark:bg-zinc-900 border border-outline-variant/20 dark:border-zinc-800/80 rounded-2xl text-left hover:border-primary/50 dark:hover:border-primary-container/50 hover:shadow-md dark:shadow-zinc-950 transition-all cursor-pointer group flex items-center gap-4">
+                    <span class="text-3xl p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl">🔒</span>
+                    <div>
+                        <div class="font-bold text-on-surface dark:text-zinc-200 group-hover:text-primary dark:group-hover:text-primary-container transition-colors">Set up VPN</div>
+                        <div class="text-xs text-on-surface-variant dark:text-zinc-400 mt-1">Access library database off-campus</div>
+                    </div>
+                </button>
+                <button onclick="sendQuickPrompt('I cannot log into the LMS portal, it says Access Denied')" 
+                    class="p-5 bg-white dark:bg-zinc-900 border border-outline-variant/20 dark:border-zinc-800/80 rounded-2xl text-left hover:border-primary/50 dark:hover:border-primary-container/50 hover:shadow-md dark:shadow-zinc-950 transition-all cursor-pointer group flex items-center gap-4">
+                    <span class="text-3xl p-3 bg-purple-50 dark:bg-purple-950/30 rounded-xl">📚</span>
+                    <div>
+                        <div class="font-bold text-on-surface dark:text-zinc-200 group-hover:text-primary dark:group-hover:text-primary-container transition-colors">LMS Access Help</div>
+                        <div class="text-xs text-on-surface-variant dark:text-zinc-400 mt-1">Troubleshoot course login & portal sync</div>
+                    </div>
+                </button>
+            </div>
         </div>
+        
         <!-- Chat Container -->
         <div class="flex-grow flex flex-col gap-8 custom-scrollbar overflow-y-auto px-4 w-full max-w-[800px] mx-auto"
             id="chat-container">
             <!-- Messages injected here -->
         </div>
+        
         <!-- Thinking Indicator (Hidden by default) -->
         <div class="hidden message-entry mb-8 px-4 w-full max-w-[800px] mx-auto" id="thinking-indicator">
             <div class="flex items-center gap-3">
                 <div
-                    class="thinking-wave flex items-center justify-center bg-white p-4 rounded-[20px] shadow-[0_12px_32px_rgba(0,0,0,0.03)] border border-primary/5">
+                    class="thinking-wave flex items-center justify-center bg-white dark:bg-zinc-900 p-4 rounded-[20px] shadow-[0_12px_32px_rgba(0,0,0,0.03)] border border-primary/5 dark:border-zinc-800/50">
                     <span></span><span></span><span></span>
                 </div>
-                <span class="text-label-sm text-on-surface-variant uppercase tracking-widest">Analysing Ticket
-                    Context</span>
+                <span class="text-label-sm text-on-surface-variant dark:text-zinc-400 uppercase tracking-widest">Analysing Ticket Context</span>
             </div>
         </div>
+        
         <!-- Dashboard View (Hidden by default) -->
         <div class="hidden flex-grow flex flex-col gap-6 w-full max-w-[1000px] mx-auto px-4" id="dashboard-view">
-            <h2 class="font-display-lg text-display-lg text-primary mb-4">Dashboard</h2>
+            <h2 class="font-display-lg text-display-lg text-primary dark:text-primary-container mb-4">Dashboard</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="dashboard-stats">
                 <!-- Injected via JS -->
             </div>
-            <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/20">
-                <h3 class="font-headline-md text-headline-md mb-4">Category Breakdown</h3>
+            <div class="mt-8 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-outline-variant/20 dark:border-zinc-800/80">
+                <h3 class="font-headline-md text-headline-md text-on-surface dark:text-zinc-200 mb-4">Category Breakdown</h3>
                 <div id="category-breakdown" class="flex flex-col gap-3"></div>
             </div>
         </div>
 
         <!-- Tickets View (Hidden by default) -->
         <div class="hidden flex-grow flex flex-col gap-6 w-full max-w-[1000px] mx-auto px-4" id="tickets-view">
-            <h2 class="font-display-lg text-display-lg text-primary mb-4">Triaged Tickets</h2>
-            <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+            <h2 class="font-display-lg text-display-lg text-primary dark:text-primary-container mb-4">Triaged Tickets</h2>
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-outline-variant/20 dark:border-zinc-800/80 overflow-hidden">
                 <table class="w-full text-left border-collapse">
-                    <thead class="bg-surface-container-low text-label-md text-on-surface-variant">
+                    <thead class="bg-surface-container-low dark:bg-zinc-800/60 text-label-md text-on-surface-variant dark:text-zinc-300">
                         <tr>
-                            <th class="p-4 border-b border-outline-variant/20 font-semibold">ID</th>
-                            <th class="p-4 border-b border-outline-variant/20 font-semibold">Summary</th>
-                            <th class="p-4 border-b border-outline-variant/20 font-semibold">Category</th>
-                            <th class="p-4 border-b border-outline-variant/20 font-semibold">Urgency</th>
-                            <th class="p-4 border-b border-outline-variant/20 font-semibold">Status</th>
+                            <th class="p-4 border-b border-outline-variant/20 dark:border-zinc-800/60 font-semibold">ID</th>
+                            <th class="p-4 border-b border-outline-variant/20 dark:border-zinc-800/60 font-semibold">Summary</th>
+                            <th class="p-4 border-b border-outline-variant/20 dark:border-zinc-800/60 font-semibold">Category</th>
+                            <th class="p-4 border-b border-outline-variant/20 dark:border-zinc-800/60 font-semibold">Urgency</th>
+                            <th class="p-4 border-b border-outline-variant/20 dark:border-zinc-800/60 font-semibold">Status</th>
                         </tr>
                     </thead>
-                    <tbody id="tickets-tbody" class="text-body-sm text-on-surface divide-y divide-outline-variant/10">
+                    <tbody id="tickets-tbody" class="text-body-sm text-on-surface dark:text-zinc-200 divide-y divide-outline-variant/10 dark:divide-zinc-800/60">
                         <!-- Injected via JS -->
                     </tbody>
                 </table>
             </div>
         </div>
+        
         <!-- Floating Input Dock -->
         <div
-            class="fixed bottom-0 left-0 w-full pt-20 pb-20 md:pb-10 bg-gradient-to-t from-[#F9F8F6] via-[#F9F8F6]/95 to-transparent z-40 pointer-events-none">
+            class="fixed bottom-0 left-0 w-full pt-20 pb-20 md:pb-10 bg-gradient-to-t from-[#F9F8F6] dark:from-[#121212] via-[#F9F8F6]/95 dark:via-[#121212]/95 to-transparent z-40 pointer-events-none transition-all duration-300">
             <div class="w-full max-w-[800px] mx-auto px-container-padding pointer-events-auto relative">
                 <div
-                    class="bg-white rounded-[28px] shadow-[0_12px_32px_rgba(0,0,0,0.03)] border border-primary/10 p-2 flex items-end group transition-all duration-300 hover:shadow-[0_16px_36px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
+                    class="bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_12px_32px_rgba(0,0,0,0.03)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.3)] border border-primary/10 dark:border-zinc-800/80 p-2 flex items-end group transition-all duration-300 hover:shadow-[0_16px_36px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
                     <textarea
-                        class="flex-grow bg-transparent border-none focus:ring-0 px-6 py-4 font-body-md text-on-surface placeholder:text-on-surface-variant/50"
+                        class="flex-grow bg-transparent border-none focus:ring-0 dark:focus:ring-0 focus:outline-none dark:focus:outline-none px-6 py-4 font-body-md text-on-surface dark:text-zinc-100 placeholder:text-on-surface-variant/50 dark:placeholder-zinc-500"
                         id="chat-input" placeholder="Ask UniDesk AI anything..." rows="1"></textarea>
                     <button
                         class="bg-primary-container text-white w-12 h-12 mb-1 rounded-full flex items-center justify-center hover:bg-primary transition-all active:scale-90 shadow-md flex-shrink-0"
@@ -440,6 +489,7 @@
             </div>
         </div>
     </main>
+    
     <script>
         const chatContainer = document.getElementById('chat-container');
         const chatInput = document.getElementById('chat-input');
@@ -451,6 +501,35 @@
         let sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         const userId = "demo_student_01";
         console.log("Session ID generated:", sessionId);
+
+        // Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleIcon = document.getElementById('theme-toggle-icon');
+
+        function initTheme() {
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'dark' || (!currentTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                themeToggleIcon.textContent = 'light_mode';
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeToggleIcon.textContent = 'dark_mode';
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                themeToggleIcon.textContent = 'dark_mode';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggleIcon.textContent = 'light_mode';
+            }
+        });
+
+        initTheme();
 
         // Robust Markdown Parsing using marked.js
         marked.use({ breaks: true, gfm: true });
@@ -479,24 +558,24 @@
                 let tagsHtml = '';
                 if (meta && meta.category && meta.urgency) {
                     const urgencyColors = {
-                        'P1': 'bg-error text-on-error',
-                        'P2': 'bg-tertiary-container text-on-tertiary-container',
-                        'P3': 'bg-secondary-container text-on-secondary-container',
-                        'P4': 'bg-surface-container-high text-on-surface-variant'
+                        'P1': 'bg-error text-on-error dark:bg-red-900/60 dark:text-red-200',
+                        'P2': 'bg-tertiary-container text-on-tertiary-container dark:bg-amber-900/60 dark:text-amber-200',
+                        'P3': 'bg-secondary-container text-on-secondary-container dark:bg-emerald-900/60 dark:text-emerald-200',
+                        'P4': 'bg-surface-container-high text-on-surface-variant dark:bg-zinc-800 dark:text-zinc-300'
                     };
                     tagsHtml = `
                         <div class="mt-4 flex items-center gap-2 flex-wrap">
-                            <span class="bg-secondary-container text-secondary px-3 py-1 rounded-full text-label-sm">${meta.category}</span>
-                            <span class="${urgencyColors[meta.urgency] || 'bg-surface-container text-on-surface-variant'} px-3 py-1 rounded-full text-label-sm">${meta.urgency}</span>
-                            ${meta.ticket ? `<button onclick="showTickets()" class="ml-auto bg-surface-container-high hover:bg-surface-variant text-on-surface text-label-sm px-4 py-1.5 rounded-full transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[16px]">confirmation_number</span> View Ticket ${meta.ticket.id}</button>` : ''}
+                            <span class="bg-secondary-container dark:bg-zinc-800 text-secondary dark:text-zinc-300 px-3 py-1 rounded-full text-label-sm">${meta.category}</span>
+                            <span class="${urgencyColors[meta.urgency] || 'bg-surface-container dark:bg-zinc-800 text-on-surface-variant'} px-3 py-1 rounded-full text-label-sm">${meta.urgency}</span>
+                            ${meta.ticket ? `<button onclick="scrollToAndHighlightTicket('${meta.ticket.id}')" class="ml-auto bg-surface-container-high dark:bg-zinc-800 hover:bg-surface-variant dark:hover:bg-zinc-700 text-on-surface dark:text-zinc-200 text-label-sm px-4 py-1.5 rounded-full transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[16px]">confirmation_number</span> View Ticket ${meta.ticket.id}</button>` : ''}
                         </div>
                     `;
                 }
 
                 wrapper.innerHTML = `
                     <div class="max-w-[85%]">
-                        <div class="bg-white px-8 py-6 rounded-[20px] rounded-tl-none shadow-[0_12px_32px_rgba(0,0,0,0.03)] border border-primary/5">
-                            <div class="font-body-md text-body-md text-on-surface leading-relaxed mb-1 markdown-content">
+                        <div class="bg-white dark:bg-zinc-900 px-8 py-6 rounded-[20px] rounded-tl-none shadow-[0_12px_32px_rgba(0,0,0,0.03)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.15)] border border-primary/5 dark:border-zinc-800/60">
+                            <div class="font-body-md text-body-md text-on-surface dark:text-zinc-200 leading-relaxed mb-1 markdown-content">
                                 ${parseMessage(content)}
                             </div>
                             ${tagsHtml}
@@ -600,9 +679,9 @@
                 const btn = document.getElementById(id);
                 if (btn) {
                     if (id === activeId) {
-                        btn.className = "text-on-primary-container bg-primary-container rounded-full p-4 scale-95 active:scale-90 transition-all cursor-pointer shadow-sm";
+                        btn.className = "text-on-primary-container dark:text-zinc-100 bg-primary-container dark:bg-primary-container rounded-full p-4 scale-95 active:scale-90 transition-all cursor-pointer shadow-sm";
                     } else {
-                        btn.className = "text-on-surface-variant bg-transparent p-4 hover:bg-surface-container-high transition-colors rounded-full cursor-pointer";
+                        btn.className = "text-on-surface-variant dark:text-zinc-400 bg-transparent p-4 hover:bg-surface-container-high dark:hover:bg-zinc-800 transition-colors rounded-full cursor-pointer";
                     }
                 }
             });
@@ -643,17 +722,17 @@
                 const stats = await res.json();
                 
                 document.getElementById('dashboard-stats').innerHTML = `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/20">
-                        <div class="text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Total Tickets</div>
-                        <div class="text-display-lg font-display-lg text-primary">${stats.total}</div>
+                    <div class="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-outline-variant/20 dark:border-zinc-800/80">
+                        <div class="text-label-md text-on-surface-variant dark:text-zinc-400 uppercase tracking-wider mb-2">Total Tickets</div>
+                        <div class="text-display-lg font-display-lg text-primary dark:text-primary-container">${stats.total}</div>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/20">
-                        <div class="text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Escalation Rate</div>
-                        <div class="text-display-lg font-display-lg text-error">${stats.escalation_rate}%</div>
+                    <div class="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-outline-variant/20 dark:border-zinc-800/80">
+                        <div class="text-label-md text-on-surface-variant dark:text-zinc-400 uppercase tracking-wider mb-2">Escalation Rate</div>
+                        <div class="text-display-lg font-display-lg text-error dark:text-red-400">${stats.escalation_rate}%</div>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/20">
-                        <div class="text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Auto-Resolved</div>
-                        <div class="text-display-lg font-display-lg text-secondary">${stats.auto_resolved}</div>
+                    <div class="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-outline-variant/20 dark:border-zinc-800/80">
+                        <div class="text-label-md text-on-surface-variant dark:text-zinc-400 uppercase tracking-wider mb-2">Auto-Resolved</div>
+                        <div class="text-display-lg font-display-lg text-secondary dark:text-emerald-400">${stats.auto_resolved}</div>
                     </div>
                 `;
 
@@ -661,19 +740,19 @@
                 breakdown.innerHTML = '';
                 for (const [key, data] of Object.entries(stats.categories)) {
                     breakdown.innerHTML += `
-                        <div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg">
+                        <div class="flex items-center justify-between p-3 bg-surface-container-low dark:bg-zinc-800/50 rounded-lg">
                             <div class="flex items-center gap-3">
                                 <span class="text-2xl">${data.icon}</span>
-                                <span class="font-label-md">${data.name}</span>
+                                <span class="font-label-md text-on-surface dark:text-zinc-300">${data.name}</span>
                             </div>
-                            <span class="font-headline-sm">${data.count}</span>
+                            <span class="font-headline-sm text-on-surface dark:text-zinc-200">${data.count}</span>
                         </div>
                     `;
                 }
             } catch (err) { console.error("Stats error", err); }
         }
 
-        async function showTickets() {
+        async function showTickets(highlightTicketId = null) {
             setActiveNav('tickets-btn');
             chatContainer.classList.add('hidden');
             emptyState.classList.add('hidden');
@@ -689,14 +768,17 @@
                 
                 tickets.forEach(t => {
                     const statusColors = {
-                        'open': 'bg-primary-container text-on-primary-container',
-                        'escalated': 'bg-error text-on-error',
-                        'resolved': 'bg-secondary-container text-on-secondary-container'
+                        'open': 'bg-primary-container text-on-primary-container dark:bg-primary-container/80 dark:text-white',
+                        'escalated': 'bg-error text-on-error dark:bg-red-950 dark:text-red-200',
+                        'resolved': 'bg-secondary-container text-on-secondary-container dark:bg-emerald-950 dark:text-emerald-200'
                     };
                     
+                    const isHighlighted = highlightTicketId === t.id;
+                    const highlightClass = isHighlighted ? 'bg-amber-500/10 dark:bg-amber-500/20 border-l-4 border-amber-500' : 'hover:bg-surface-container-low dark:hover:bg-zinc-800/30';
+                    
                     tbody.innerHTML += `
-                        <tr class="hover:bg-surface-container-low transition-colors">
-                            <td class="p-4 font-label-md text-primary">${t.id}</td>
+                        <tr id="ticket-row-${t.id}" class="${highlightClass} transition-colors">
+                            <td class="p-4 font-label-md text-primary dark:text-primary-container">${t.id}</td>
                             <td class="p-4 font-body-sm">${t.summary}</td>
                             <td class="p-4">${t.category_icon} ${t.category_name}</td>
                             <td class="p-4">
@@ -711,7 +793,29 @@
                         </tr>
                     `;
                 });
+
+                if (highlightTicketId) {
+                    setTimeout(() => {
+                        const row = document.getElementById(`ticket-row-${highlightTicketId}`);
+                        if (row) {
+                            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 200);
+                }
             } catch (err) { console.error("Tickets error", err); }
+        }
+
+        // Quick Prompt sender helper
+        function sendQuickPrompt(text) {
+            chatInput.value = text;
+            chatInput.style.height = 'auto';
+            chatInput.style.height = chatInput.scrollHeight + 'px';
+            handleSendMessage();
+        }
+
+        // Scroll & highlight helper
+        async function scrollToAndHighlightTicket(ticketId) {
+            await showTickets(ticketId);
         }
 
         // Navigation Button Listeners
@@ -727,7 +831,6 @@
             sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
             console.log("Started new chat session:", sessionId);
 
-            // Optionally, we could call POST /api/reset here too
             try {
                 await fetch('/api/reset', {
                     method: 'POST',
@@ -737,28 +840,28 @@
             } catch (err) { console.error("Reset error:", err); }
         });
 
-        document.getElementById('tickets-btn').addEventListener('click', showTickets);
+        document.getElementById('tickets-btn').addEventListener('click', () => showTickets());
         document.getElementById('dashboard-btn').addEventListener('click', showDashboard);
         document.getElementById('help-btn').addEventListener('click', showChat);
 
         // Mobile Nav Listeners
         document.getElementById('mob-chat-tab-btn')?.addEventListener('click', showChat);
-        document.getElementById('mob-tickets-btn')?.addEventListener('click', showTickets);
+        document.getElementById('mob-tickets-btn')?.addEventListener('click', () => showTickets());
         document.getElementById('mob-dashboard-btn')?.addEventListener('click', showDashboard);
 
     </script>
     
     <!-- Mobile Bottom NavBar -->
-    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface border-t border-outline-variant/10 flex justify-around items-center py-2 pb-safe z-[60] shadow-[0_-4px_16px_rgba(0,0,0,0.05)]">
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface dark:bg-zinc-900 border-t border-outline-variant/10 dark:border-zinc-800/60 flex justify-around items-center py-2 pb-safe z-[60] shadow-[0_-4px_16px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_16px_rgba(0,0,0,0.3)] transition-all duration-300">
         <div id="mob-chat-tab-btn" class="flex flex-col items-center text-primary cursor-pointer w-1/3 py-1">
             <span class="material-symbols-outlined mb-1 text-[24px]">forum</span>
             <span class="text-[10px] font-semibold">Chat</span>
         </div>
-        <div id="mob-tickets-btn" class="flex flex-col items-center text-on-surface-variant cursor-pointer w-1/3 py-1">
+        <div id="mob-tickets-btn" class="flex flex-col items-center text-on-surface-variant dark:text-zinc-400 cursor-pointer w-1/3 py-1">
             <span class="material-symbols-outlined mb-1 text-[24px]">confirmation_number</span>
             <span class="text-[10px] font-semibold">Tickets</span>
         </div>
-        <div id="mob-dashboard-btn" class="flex flex-col items-center text-on-surface-variant cursor-pointer w-1/3 py-1">
+        <div id="mob-dashboard-btn" class="flex flex-col items-center text-on-surface-variant dark:text-zinc-400 cursor-pointer w-1/3 py-1">
             <span class="material-symbols-outlined mb-1 text-[24px]">dashboard</span>
             <span class="text-[10px] font-semibold">Dashboard</span>
         </div>

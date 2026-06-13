@@ -139,18 +139,24 @@ async def chat(request: Request):
             ...
         }
     """
+    global engine
     if engine is None:
-        return JSONResponse(
-            status_code=503,
-            content={
-                "success": False,
-                "message": (
-                    "⚠️ The AI engine is not available right now. "
-                    "Please make sure the GOOGLE_API_KEY is configured."
-                ),
-                "error": "Engine not initialized",
-            },
-        )
+        try:
+            engine = TriageEngine()
+            logger.info("✅ UniDesk AI initialized on demand!")
+        except Exception as e:
+            logger.error("❌ Failed to initialize engine on demand: %s", e)
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "success": False,
+                    "message": (
+                        "⚠️ The AI engine is not available right now. "
+                        "Please make sure the GOOGLE_API_KEY is configured."
+                    ),
+                    "error": str(e),
+                },
+            )
 
     try:
         data = await request.json()
@@ -237,8 +243,12 @@ async def reset_session(request: Request):
     Request body:
         { "session_id": "uuid-string" }
     """
+    global engine
     if engine is None:
-        return {"success": False, "error": "Engine not initialized"}
+        try:
+            engine = TriageEngine()
+        except Exception as e:
+            return {"success": False, "error": f"Engine not initialized: {e}"}
 
     data = await request.json()
     session_id = data.get("session_id", "default")

@@ -12,7 +12,7 @@ load_dotenv()
 
 # ─── API Configuration (Google AI Studio — free) ────────────
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
-MODEL = "gemini-3.1-flash-lite"
+MODEL = "gemini-2.5-flash"
 
 # ─── Application ────────────────────────────────────────────
 APP_NAME = "UniDesk AI"
